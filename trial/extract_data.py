@@ -1,9 +1,7 @@
 import pandas as pd
 import os
-import json
 
 from utils import json_to_df, get_most_common_word_simple
-
 
 base_repo_dir = r"C:\Users\User\Documents\Ruppin\age_prediction_project_repo"  # replace for your own
 train_path = os.path.join(base_repo_dir, "data_files", "train.json")
