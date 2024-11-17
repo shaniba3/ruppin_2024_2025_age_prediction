@@ -4,7 +4,7 @@ import os
 from utils import json_to_df, get_most_common_word_simple
 
 base_repo_dir = os.getcwd().replace("trial", "")
-train_path = os.path.join(base_repo_dir, "data_files", "train_10000.json")
+train_path = os.path.join(base_repo_dir, "data_files", "train_1000.json")
 
 # extracting train data into a df:
 train_df = json_to_df(json_file=train_path)
@@ -13,7 +13,7 @@ print(train_df.head((2)))
 
 
 # Generate a basic feature DataFrame for the first 1000 posts
-basic_feature_df = train_df[["age", "gender", "post"]].iloc[:1000]
+basic_feature_df = train_df[["age", "gender", "post"]]
 # Ensure 'post_index' is correctly copied
 basic_feature_df["post_index"] = basic_feature_df.index
 # Calculate word count for each post
