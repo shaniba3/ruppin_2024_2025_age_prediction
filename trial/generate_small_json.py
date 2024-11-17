@@ -12,10 +12,10 @@ train_data = json_to_dict(train_path)
 
 print(len(train_data))
 
-smaller_train_data = random.sample(train_data, 10000)
+smaller_train_data = random.sample(train_data, 1000)
 print(len(smaller_train_data))
 
-smaller_train_data_path = os.path.join(base_repo_dir, "data_files", "train_10000.json")
+smaller_train_data_path = os.path.join(base_repo_dir, "data_files", "train_1000.json")
 with open(smaller_train_data_path, "w") as fp:
     json.dump(smaller_train_data, fp)
 
