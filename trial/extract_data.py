@@ -4,7 +4,7 @@ import os
 from utils import json_to_df, get_most_common_word_simple
 
 base_repo_dir = os.getcwd().replace("trial", "")
-train_path = os.path.join(base_repo_dir, "data_files", "train_1000.json")
+train_path = os.path.join(base_repo_dir, "data", "train_1000.json")
 
 # extracting train data into a df:
 train_df = json_to_df(json_file=train_path)
