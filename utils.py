@@ -3,11 +3,11 @@ import json
 from collections import Counter
 
 
-def json_to_dict(json_file: str) -> dict:
+def json_to_list(json_file: str) -> list:
     """
     Reads a json file and return a dict
     :param json_file: full path to json file
-    :return: dict
+    :return: list of dictionaries
     """
     with open(json_file,'r', encoding='utf-8') as json_file:
         return json.load(json_file)
