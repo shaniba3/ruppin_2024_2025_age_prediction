@@ -33,3 +33,4 @@ def get_most_common_word_simple(post: str) -> str:
     words = post.split()
     most_common = Counter(words).most_common(1)
     return most_common[0][0] if most_common else None
+
