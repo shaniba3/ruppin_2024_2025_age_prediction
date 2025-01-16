@@ -1,51 +1,70 @@
 from imports import *
 from feature_functions import *
-
 # הגדרת הנתיב הבסיסי לפרויקט
 base_repo_dir = os.getcwd()
 
 # קריאה לפונקציה לטעינת הנתונים
-basic_feature_df = load_and_prepare_data(base_repo_dir)
+posts_df, features_df = load_and_prepare_data(base_repo_dir)
+
 
 # הצגת תוצאה ראשונית (לבדוק שהנתונים נטענו כהלכה)
 print("Data loaded and prepared:")
-print(basic_feature_df.head())
+print("Posts DataFrame:")
+print(posts_df.head())
+print("Features DataFrame:")
+print(features_df.head())
 
-# שימוש בפונקציה להוספת הפיצ'ר stop_word_ratio
-basic_feature_df = add_stop_word_ratio_feature(basic_feature_df)
-# ניקוי מילות קישור והחלפת עמודת 'post'
-basic_feature_df = remove_stop_words_from_posts(basic_feature_df)
-# בדיקת ערכים חסרים בעמודת הגיל
-check_missing_ages(basic_feature_df)
-# הוספת עמודת המילה הנפוצה ביותר
-basic_feature_df = add_most_common_word(basic_feature_df)
-# הוספת עמודת מספר המילים
-basic_feature_df = add_word_count(basic_feature_df)
-# הוספת עמודת יחס מילים ייחודיות
-basic_feature_df = add_unique_word_ratio(basic_feature_df)
-# הוספת עמודת tfidf_score
-basic_feature_df = add_tfidf_score(basic_feature_df)
-# הוספת עמודת sentiment_score
-basic_feature_df = add_sentiment_score(basic_feature_df)
-# הוספת עמודת vader_sentiment_label
-basic_feature_df = add_vader_sentiment_label(basic_feature_df)
-# הוספת עמודת formality_score
-basic_feature_df = add_formality_score(basic_feature_df)
-# הוספת עמודת punctuation_ratio
-basic_feature_df = add_punctuation_ratio(basic_feature_df)
-# הוספת עמודת punctuation_correctness_score
-basic_feature_df = add_punctuation_correctness_score(basic_feature_df)
-# הוספת עמודת grammar_error_ratio
-basic_feature_df = add_grammar_error_ratio(basic_feature_df)
-# הוספת עמודת avg_word_length
-basic_feature_df = add_avg_word_length(basic_feature_df)
-# הוספת עמודות מנורמלות של סימני הפיסוק
-basic_feature_df = add_normalized_punctuation_features(basic_feature_df)
-# הוספת עמודות של חלוקת זמני הפעלים
-basic_feature_df = add_verb_tense_distribution(basic_feature_df)
+# הוספת הפיצ'ר stop_word_ratio
+features_df = add_stop_word_ratio(posts_df, features_df)
+# עדכון טבלת הפוסטים לאחר הסרת מילות קישור
+posts_df = remove_stop_words(posts_df)
+# בדיקת ערכים חסרים בעמודת הגיל בטבלת הפיצ'רים
+check_missing_ages(features_df)
+# הוספת הפיצ'ר most_common_word
+features_df = add_most_common_word(posts_df, features_df)
+# הוספת הפיצ'ר word_count
+features_df = add_word_count(posts_df, features_df)
+# הוספת הפיצ'ר unique_word_ratio
+features_df = add_unique_word_ratio(posts_df, features_df)
+# הוספת הפיצ'ר tfidf_score
+features_df = add_tfidf_score(posts_df, features_df)
+# הוספת הפיצ'ר sentiment_score
+features_df = add_sentiment_score(posts_df, features_df)
+# הוספת הפיצ'ר vader_sentiment_label
+features_df = add_vader_sentiment_label(posts_df, features_df)
+# הוספת סנטימנט נוסף עם Flair
+features_df = add_flair_sentiment_score(posts_df, features_df)
+# הוספת סנטימנט נוסף עם BERT
+#features_df = add_bert_sentiment_score(posts_df, features_df)
+# הוספת הפיצ'ר formality_score
+features_df = add_formality_score(posts_df, features_df)
+# הוספת מדד פורמליות אלטרנטיבי (Gunning Fog)
+features_df = add_alternative_formality_score(posts_df, features_df)
+# הוספת הפיצ'ר punctuation_ratio
+features_df = add_punctuation_ratio(posts_df, features_df)
+# הוספת הפיצ'ר punctuation_correctness_score
+features_df = add_punctuation_correctness_score(posts_df, features_df)
+# הוספת הפיצ'ר grammar_error_ratio
+features_df = add_grammar_error_ratio(posts_df, features_df)
+# הוספת הפיצ'ר avg_word_length
+features_df = add_avg_word_length(posts_df, features_df)
+# הוספת הפיצ'רים המנורמלים של סימני הפיסוק
+features_df = add_normalized_punctuation_features(posts_df, features_df)
+# הוספת הפיצ'רים של חלוקת זמני הפעלים
+features_df = add_verb_tense_distribution(posts_df, features_df)
+# הוספת חלוקת זמני פעלים עם CoreNLP (Stanza)
+features_df = add_verb_tense_distribution_alternative(posts_df, features_df)
 
-if __name__ == "__main__":
-    # הקוד שלך שנטען את הנתונים
-    print("Entering interactive mode...")
-    import code
-    code.interact(local=locals())
+
+# ייצוא טבלת הפוסטים
+posts_df.to_csv("posts_table10Ktest1.csv", index=False)
+print("Posts table exported successfully to 'posts_table10Ktest1.csv'.")
+
+# ייצוא טבלת הפיצ'רים
+features_df.to_csv("features_table10Ktest1.csv", index=False)
+print("Features table exported successfully to 'features_table10Ktest1.csv'.")
+
+
+
+
+

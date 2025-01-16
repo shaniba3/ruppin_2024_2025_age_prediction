@@ -34,3 +34,13 @@ tool = language_tool_python.LanguageTool('en-US')
 
 # ייבוא פונקציות עזר (אם יש לך פונקציות נוספות)
 from utils import json_to_df, get_most_common_word_simple
+
+from flair.models import TextClassifier
+from flair.data import Sentence
+from transformers import pipeline
+import stanza
+
+# טוען את המודל האנגלי של CoreNLP
+stanza.download('en')
+nlp = stanza.Pipeline(lang='en', processors='tokenize,pos')
+
