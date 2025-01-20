@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 # הגדרות או אתחול (אם יש צורך)
 nltk.download('stopwords')
 nltk.download('punkt')
-stop_words = set(stopwords.words('english'))
+stop_words = set(stopwords.words('english')).union(spacy.load("en_core_web_sm").Defaults.stop_words)
 
 nlp = spacy.load("en_core_web_sm")
 tool = language_tool_python.LanguageTool('en-US')
@@ -43,4 +43,5 @@ import stanza
 # טוען את המודל האנגלי של CoreNLP
 stanza.download('en')
 nlp = stanza.Pipeline(lang='en', processors='tokenize,pos')
-
+from datetime import datetime
+import time
