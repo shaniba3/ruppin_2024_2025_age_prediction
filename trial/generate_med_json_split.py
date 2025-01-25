@@ -37,3 +37,4 @@ for i in range(num_splits):
     print(f"Created {output_path} with {len(split_data)} records.")
 
 print("Data successfully split into 6 groups.")
+
