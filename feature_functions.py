@@ -9,7 +9,7 @@ def export_table_to_parquet(dataframe, file_name):
 
 
 # פונקציה טעינה והכנת נתונים
-def load_and_prepare_data(base_repo_dir, file_name="train_100000.json"):
+def load_and_prepare_data(base_repo_dir, file_name="split_files/train_split_1.json"):
     # הגדרת הנתיב לקובץ
     file_path = os.path.join(base_repo_dir, "data", file_name)
 
@@ -308,20 +308,22 @@ def add_formality_score(posts_df, features_df):
 
 def add_alternative_formality_score(posts_df, features_df):
     """
-    מחשבת מדד פורמליות נוסף (Gunning Fog Index) ומוסיפה לטבלת הפיצ'רים עם שם עמודה ייחודי.
+    מחשבת מדד פורמליות אלטרנטיבי (Gunning Fog Index) וממירה אותו לטווח 0-1.
     """
     def calculate_gunning_fog(text):
-        if not text:
-            return 0.5  # ערך ניטרלי במקרה של טקסט ריק
-        return textstat.gunning_fog(text)  # חישוב Gunning Fog Index
+        if not text:  # אם אין טקסט, ערך ברירת מחדל
+            return 0.5
+        raw_score = textstat.gunning_fog(text)  # מחשב את הציון המקורי
+        normalized_score = max(0, min(1, 1 - (raw_score / 20)))  # מנרמל לטווח 0-1
+        return normalized_score
 
-    # הוספת הפיצ'ר לטבלת הפיצ'רים
     features_df["formality_score_gunning_fog"] = posts_df["post"].apply(calculate_gunning_fog)
 
     print("Added alternative formality score (Gunning Fog):")
     print(features_df[["post_index", "formality_score_gunning_fog"]].head())
 
     return features_df
+
 
 def add_combined_formality_features( features_df):
 
