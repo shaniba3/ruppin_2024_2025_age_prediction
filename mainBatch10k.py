@@ -46,49 +46,31 @@ for batch_num in range(num_batches):
     # *** קבוצה 1: הכנה בסיסית של הנתונים ***
     features_batch = add_stop_word_ratio(posts_batch, features_batch)  # יחס מילות קישור
     #posts_batch = remove_stop_words(posts_batch)  # הסרת מילות קישור - לא צריך כי אולי הורס את הדאטה
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     check_missing_ages(features_batch)  # בדיקה אם יש ערכים חסרים
 
     # *** קבוצה 2: סטטיסטיקות בסיסיות של טקסט ***
     features_batch = add_word_count(posts_batch, features_batch)  # ספירת מילים
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_unique_word_ratio(posts_batch, features_batch)  # יחס מילים ייחודיות
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_avg_word_length(posts_batch, features_batch)  # אורך ממוצע של מילים
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     # *** קבוצה 3: סנטימנט ***
     features_batch = add_sentiment_score(posts_batch, features_batch)  # TextBlob
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_vader_sentiment_score(posts_batch, features_batch)  # Vader
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_flair_sentiment_score(posts_batch, features_batch)  # Flair
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_bert_sentiment_score(posts_batch, features_batch)  # BERT
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_final_sentiment_score(features_batch)  # "הרוב קובע"
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # *** קבוצה 4: פורמליות ואיכות כתיבה ***
     features_batch = add_formality_score(posts_batch, features_batch)  # פורמליות (Flesch)
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_alternative_formality_score(posts_batch, features_batch)  # פורמליות (Gunning Fog)
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_combined_formality_features(features_batch)  # שילוב מדדי פורמליות
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_punctuation_ratio(posts_batch, features_batch)  # יחס סימני פיסוק
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_normalized_punctuation_features(posts_batch, features_batch)  # יחס מנורמל
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_writing_quality_score(posts_batch, features_batch)  # איכות כתיבה
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # *** קבוצה 5: חלוקת זמני פעלים ***
     features_batch = add_verb_tense_distribution(posts_batch, features_batch)  # NLTK
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_verb_tense_distribution_alternative(posts_batch, features_batch)  # Stanza
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     features_batch = add_combined_tense_distribution(features_batch)  # ממוצע בין חלוקת הזמנים
-    print(f"Function 'example_function' finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # ייצוא טבלה מעודכנת לכל באץ'
     export_table_to_parquet(features_batch, batch_file)
@@ -112,7 +94,7 @@ all_features = pd.concat(
 
 # ייצוא טבלה סופית
 export_table_to_parquet(all_features, "final_features_table.parquet")
-print("Final features table exported successfully to 'final_features_table.parquet'.")
+print("Final features table exported successfully to 'final_features_table1.parquet'.")
 
 # *** פונקציות שלא בשימוש ***
 # פונקציות אלו אינן מופעלות בקוד אך ייתכן ונשתמש בהן בהמשך.

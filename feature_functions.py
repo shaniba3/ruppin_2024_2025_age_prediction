@@ -8,6 +8,8 @@ def export_table_to_parquet(dataframe, file_name):
     print(f"Table exported successfully to '{file_name}'.")
 
 
+
+
 # פונקציה טעינה והכנת נתונים
 def load_and_prepare_data(base_repo_dir, file_name="split_files/train_split_1.json"):
     # הגדרת הנתיב לקובץ
@@ -20,7 +22,6 @@ def load_and_prepare_data(base_repo_dir, file_name="split_files/train_split_1.js
 
     # הכנת טבלת הפוסטים המקורית
     posts_df = train_df[["age", "post"]].copy()
-    posts_df["post_index"] = posts_df.index
     print(f"Posts DataFrame shape: {posts_df.shape}")
     print(posts_df.head())
 
@@ -31,6 +32,28 @@ def load_and_prepare_data(base_repo_dir, file_name="split_files/train_split_1.js
 
     return posts_df, features_df
 
+
+def safe_function(func, posts_df=None, features_df=None):
+    """מריץ פונקציה בתוך try/except. אם היא נכשלת, מחזיר את הנתונים ללא שינוי, מדפיס שגיאה, ומודד זמן ריצה."""
+    start_time = time.time()  # שמירת זמן התחלה
+    try:
+        if posts_df is not None:
+            result = func(posts_df, features_df)
+        else:
+            result = func(features_df)
+
+        result = result if result is not None else features_df  # מונע החזרת None
+
+        end_time = time.time()  # זמן סיום
+        elapsed_time = end_time - start_time  # חישוב משך הזמן
+        print(f"✅ Function {func.__name__} completed successfully in {elapsed_time:.2f} seconds.")
+
+        return result
+    except Exception as e:
+        end_time = time.time()  # מדידת זמן גם במקרה של שגיאה
+        elapsed_time = end_time - start_time
+        print(f"❌ Error in function {func.__name__} after {elapsed_time:.2f} seconds: {str(e)}")
+        return features_df  # מחזירים את הנתונים ללא שינוי כדי שהקוד ימשיך
 
 def add_stop_word_ratio (posts_df, features_df):
     # הכנת רשימת Stop Words כ-Set לביצועים טובים יותר
@@ -64,8 +87,8 @@ def remove_stop_words(posts_df):
     posts_df['post'] = posts_df['post'].fillna('')  # טיפול בטקסטים ריקים
     posts_df['post'] = posts_df['post'].apply(lambda x: stop_words_pattern.sub('', x).strip())
 
-    print("Posts after removing stop words:")
-    print(posts_df[['post']].head())
+    #print("Posts after removing stop words:")
+    #print(posts_df[['post']].head())
 
     return posts_df
 
@@ -93,16 +116,16 @@ def add_most_common_word(posts_df, features_df):
     # הוספת עמודת most_common_word לטבלת הפיצ'רים
     features_df['most_common_word'] = posts_df['post'].apply(get_most_common_word)
 
-    print("DataFrame after adding most_common_word feature:")
-    print(features_df[['post_index', 'most_common_word']].head())
+    #print("DataFrame after adding most_common_word feature:")
+    #print(features_df[['post_index', 'most_common_word']].head())
     return features_df
 
 
 # מחשב את מספר המילים בכל פוסט ומעדכן בטבלת הפיצ'רים
 def add_word_count(posts_df, features_df):
     features_df["word_count"] = posts_df["post"].str.split().str.len().fillna(0)
-    print("Added word_count column:")
-    print(features_df[["post_index", "word_count"]].head())
+    #print("Added word_count column:")
+    #print(features_df[["post_index", "word_count"]].head())
     return features_df
 
 
@@ -117,8 +140,8 @@ def add_unique_word_ratio(posts_df, features_df):
         return len(set(tokens)) / len(tokens)
 
     features_df["unique_word_ratio"] = posts_df["post"].apply(unique_word_ratio)
-    print("Added unique_word_ratio column:")
-    print(features_df[["post_index", "unique_word_ratio"]].head())
+    #print("Added unique_word_ratio column:")
+    #print(features_df[["post_index", "unique_word_ratio"]].head())
     return features_df
 
 # מחשב את הציון TF-IDF לכל פוסט ומעדכן בטבלת הפיצ'רים
@@ -131,8 +154,8 @@ def add_tfidf_score(posts_df, features_df):
     # הוספת עמודת tfidf_score לטבלת הפיצ'רים
     features_df["tfidf_score"] = tfidf_matrix.mean(axis=1).A1  # A1 ממיר את התוצאה ל-vector
 
-    print("Added tfidf_score column:")
-    print(features_df[["post_index", "tfidf_score"]].head())
+    #print("Added tfidf_score column:")
+    #print(features_df[["post_index", "tfidf_score"]].head())
     return features_df
 
 # מחשב את ציון הסנטימנט (sentiment score) עבור כל פוסט ומעדכן בטבלת הפיצ'רים
@@ -140,8 +163,8 @@ def add_sentiment_score(posts_df, features_df):
     features_df["sentiment_score"] = posts_df["post"].apply(
         lambda text: TextBlob(text).sentiment.polarity if pd.notnull(text) else 0
     )
-    print("Added sentiment_score column:")
-    print(features_df[["post_index", "sentiment_score"]].head())
+    #print("Added sentiment_score column:")
+    #print(features_df[["post_index", "sentiment_score"]].head())
     return features_df
 
 # מחשב את תווית הסנטימנט (sentiment label) באמצעות VADER ומעדכן בטבלת הפיצ'רים
@@ -159,8 +182,8 @@ def add_vader_sentiment_score(posts_df, features_df):
 
     features_df["vader_sentiment_score"] = posts_df["post"].apply(vader_sentiment_score)
 
-    print("Added vader_sentiment_score column:")
-    print(features_df[["post_index", "vader_sentiment_score"]].head())
+    #print("Added vader_sentiment_score column:")
+    #print(features_df[["post_index", "vader_sentiment_score"]].head())
 
     return features_df
 
@@ -186,8 +209,8 @@ def add_flair_sentiment_score(posts_df, features_df):
     # הוספת הפיצ'ר לטבלת הפיצ'רים
     features_df["flair_sentiment_score"] = posts_df["post"].apply(calculate_flair_sentiment)
 
-    print("Added sentiment score (Flair):")
-    print(features_df[["post_index", "flair_sentiment_score"]].head())
+    #print("Added sentiment score (Flair):")
+    #print(features_df[["post_index", "flair_sentiment_score"]].head())
 
     return features_df
 
@@ -220,8 +243,8 @@ def add_bert_sentiment_score(posts_df, features_df):
     # הוספת הפיצ'ר לטבלת הפיצ'רים
     features_df["bert_sentiment_score"] = posts_df["post"].apply(calculate_bert_sentiment)
 
-    print("Added sentiment score (BERT):")
-    print(features_df[["post_index", "bert_sentiment_score"]].head())
+    #print("Added sentiment score (BERT):")
+    #print(features_df[["post_index", "bert_sentiment_score"]].head())
 
     return features_df
 
@@ -283,8 +306,8 @@ def add_final_sentiment_score(features_df):
         [f"{col}_decision" for col in sentiment_columns]
     ].apply(majority_vote, axis=1)
 
-    print("Added final_sentiment column:")
-    print(features_df[["post_index", "final_sentiment"]].head())
+    #print("Added final_sentiment column:")
+    #print(features_df[["post_index", "final_sentiment"]].head())
 
     return features_df
 
@@ -302,8 +325,8 @@ def add_formality_score(posts_df, features_df):
         return formality_score
 
     features_df["formality_score"] = posts_df["post"].apply(calculate_formality)
-    print("Added formality_score column:")
-    print(features_df[["post_index", "formality_score"]].head())
+    #print("Added formality_score column:")
+    #print(features_df[["post_index", "formality_score"]].head())
     return features_df
 
 def add_alternative_formality_score(posts_df, features_df):
@@ -319,8 +342,8 @@ def add_alternative_formality_score(posts_df, features_df):
 
     features_df["formality_score_gunning_fog"] = posts_df["post"].apply(calculate_gunning_fog)
 
-    print("Added alternative formality score (Gunning Fog):")
-    print(features_df[["post_index", "formality_score_gunning_fog"]].head())
+    #print("Added alternative formality score (Gunning Fog):")
+    #print(features_df[["post_index", "formality_score_gunning_fog"]].head())
 
     return features_df
 
@@ -356,8 +379,8 @@ def add_combined_formality_features( features_df):
     )
 
     # הדפסת נתוני העמודות החדשות
-    print("Added combined_formality_score and combined_formality_label columns:")
-    print(features_df[["post_index", "combined_formality_score", "combined_formality_label"]].head())
+    #print("Added combined_formality_score and combined_formality_label columns:")
+    #print(features_df[["post_index", "combined_formality_score", "combined_formality_label"]].head())
 
     return features_df
 
@@ -373,8 +396,8 @@ def add_punctuation_ratio(posts_df, features_df):
         return punctuation_count / word_count if word_count > 0 else 0  # יחס סימני פיסוק
 
     features_df["punctuation_ratio"] = posts_df["post"].apply(punctuation_ratio)
-    print("Added punctuation_ratio column:")
-    print(features_df[["post_index", "punctuation_ratio"]].head())
+    #print("Added punctuation_ratio column:")
+    #print(features_df[["post_index", "punctuation_ratio"]].head())
     return features_df
 
 
@@ -408,8 +431,8 @@ def calculate_writing_quality(text):
 def add_writing_quality_score(posts_df, features_df):
 
     features_df["writing_quality_score"] = posts_df["post"].apply(calculate_writing_quality)
-    print("Added writing_quality_score column:")
-    print(features_df[["post_index", "writing_quality_score"]].head())
+    #print("Added writing_quality_score column:")
+    #print(features_df[["post_index", "writing_quality_score"]].head())
     return features_df
 
 
@@ -426,8 +449,8 @@ def add_grammar_error_ratio(posts_df, features_df):
         return len(matches) / total_words if total_words > 0 else 0  # יחס שגיאות דקדוק
 
     features_df["grammar_error_ratio"] = posts_df["post"].apply(grammar_error_ratio)
-    print("Added grammar_error_ratio column:")
-    print(features_df[["post_index", "grammar_error_ratio"]].head())
+    #print("Added grammar_error_ratio column:")
+    #print(features_df[["post_index", "grammar_error_ratio"]].head())
     return features_df
 
 # מחשב את אורך המילים הממוצע בטקסט ומעדכן בטבלת הפיצ'רים
@@ -441,8 +464,8 @@ def add_avg_word_length(posts_df, features_df):
         return total_length / len(words) if len(words) > 0 else 0.0  # ממוצע
 
     features_df["avg_word_length"] = posts_df["post"].apply(average_word_length)
-    print("Added avg_word_length column:")
-    print(features_df[["post_index", "avg_word_length"]].head())
+    #print("Added avg_word_length column:")
+    #print(features_df[["post_index", "avg_word_length"]].head())
     return features_df
 
 
@@ -474,9 +497,8 @@ def add_normalized_punctuation_features(posts_df, features_df):
     for column in punctuation_features.columns:
         features_df[column] = punctuation_features[column]
 
-    print("Added normalized punctuation features:")
-    print(features_df[
-              ["post_index", "question_mark_ratio", "exclamation_mark_ratio", "comma_ratio", "period_ratio"]].head())
+    #print("Added normalized punctuation features:")
+    #print(features_df[["post_index", "question_mark_ratio", "exclamation_mark_ratio", "comma_ratio", "period_ratio"]].head())
     return features_df
 
 # מחשב פיצ'רים לחלוקת זמני הפעלים ומעדכן בטבלת הפיצ'רים
@@ -521,8 +543,8 @@ def add_verb_tense_distribution(posts_df, features_df):
     for column in tense_features.columns:
         features_df[column] = tense_features[column]
 
-    print("Added verb tense distribution features:")
-    print(features_df[["post_index", "past_ratio", "present_ratio", "future_ratio"]].head())
+    #print("Added verb tense distribution features:")
+    #print(features_df[["post_index", "past_ratio", "present_ratio", "future_ratio"]].head())
     return features_df
 
 def add_verb_tense_distribution_alternative(posts_df, features_df):
@@ -537,7 +559,7 @@ def add_verb_tense_distribution_alternative(posts_df, features_df):
         tense_counts = {"past": 0, "present": 0, "future": 0}
 
         # עובר על כל המילים בטקסט ומחשב את תדירות הזמנים
-        for sentence in doc.sentences:
+        for sentence in doc.sents:
             for word in sentence.words:
                 if word.xpos in ["VBD", "VBN"]:  # זמן עבר
                     tense_counts["past"] += 1
@@ -562,8 +584,8 @@ def add_verb_tense_distribution_alternative(posts_df, features_df):
     tense_features = posts_df['post'].apply(verb_tense_distribution_stanza).apply(pd.Series)
     features_df = pd.concat([features_df, tense_features], axis=1)
 
-    print("DataFrame after adding alternative verb tense distribution:")
-    print(features_df[['post_index', 'past_ratio_stanza', 'present_ratio_stanza', 'future_ratio_stanza']].head())
+    #print("DataFrame after adding alternative verb tense distribution:")
+    #print(features_df[['post_index', 'past_ratio_stanza', 'present_ratio_stanza', 'future_ratio_stanza']].head())
 
     return features_df
 
@@ -592,8 +614,8 @@ def add_combined_tense_distribution(features_df):
     ) / 2
 
     # הדפסת דוגמה של התוצאות
-    print("DataFrame after adding combined tense distribution:")
-    print(features_df[['post_index', 'past_ratio_combined', 'present_ratio_combined', 'future_ratio_combined']].head())
+    #print("DataFrame after adding combined tense distribution:")
+    #print(features_df[['post_index', 'past_ratio_combined', 'present_ratio_combined', 'future_ratio_combined']].head())
 
     return features_df
 
@@ -611,8 +633,8 @@ def add_punctuation_correctness_score(posts_df, features_df):
         return max(0, 1 - (total_punctuation_errors / word_count)) if word_count > 0 else 0
 
     features_df["punctuation_correctness_score"] = posts_df["post"].apply(punctuation_correctness_score)
-    print("Added punctuation_correctness_score column:")
-    print(features_df[["post_index", "punctuation_correctness_score"]].head())
+    #print("Added punctuation_correctness_score column:")
+    #print(features_df[["post_index", "punctuation_correctness_score"]].head())
     return features_df
 
 
